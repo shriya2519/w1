@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaAnalytics - Water Quality Prediction</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#0ea5e9',secondary:'#0284c7'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f8fafc;
+}
+.water-bg {
+background-image: url('https://public.readdy.ai/ai/img_res/e31557b9dbb6471a724d7813f130779a.jpg');
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+}
+.glass-effect {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.parameter-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+input[type="range"] {
+-webkit-appearance: none;
+height: 8px;
+background: #e2e8f0;
+border-radius: 4px;
+outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 18px;
+height: 18px;
+background: #0ea5e9;
+border-radius: 50%;
+cursor: pointer;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+.custom-checkbox {
+display: inline-block;
+width: 20px;
+height: 20px;
+background: white;
+border: 2px solid #0ea5e9;
+border-radius: 4px;
+position: relative;
+}
+.custom-checkbox.checked:after {
+content: '';
+position: absolute;
+width: 12px;
+height: 12px;
+background: #0ea5e9;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border-radius: 2px;
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 48px;
+height: 24px;
+}
+.custom-switch-track {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e2e8f0;
+border-radius: 24px;
+transition: 0.4s;
+}
+.custom-switch-thumb {
+position: absolute;
+height: 20px;
+width: 20px;
+left: 2px;
+bottom: 2px;
+background-color: white;
+border-radius: 50%;
+transition: 0.4s;
+}
+.custom-switch.active .custom-switch-track {
+background-color: #0ea5e9;
+}
+.custom-switch.active .custom-switch-thumb {
+transform: translateX(24px);
+}
+</style>
+</head>
+<body class="water-bg min-h-screen">
+<header class="sticky top-0 z-50 glass-effect">
+<nav class="container mx-auto px-6 py-4">
+<div class="flex justify-between items-center">
+<div class="flex items-center">
+<a href="#" class="text-3xl font-['Pacifico'] text-primary">AquaAnalytics</a>
+</div>
+<div class="hidden md:flex space-x-8">
+<a href="#home" class="text-gray-800 hover:text-primary font-medium transition-colors">Home</a>
+<a href="#features" class="text-gray-800 hover:text-primary font-medium transition-colors">Features</a>
+<a href="#predictor" class="text-gray-800 hover:text-primary font-medium transition-colors">Predictor</a>
+<a href="#parameters" class="text-gray-800 hover:text-primary font-medium transition-colors">Parameters</a>
+<a href="#about" class="text-gray-800 hover:text-primary font-medium transition-colors">About Us</a>
+<a href="#contact" class="text-gray-800 hover:text-primary font-medium transition-colors">Contact</a>
+</div>
+<div class="md:hidden w-10 h-10 flex items-center justify-center">
+<i class="ri-menu-line ri-2x text-gray-800"></i>
+</div>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section id="home" class="min-h-[80vh] flex items-center">
+<div class="container mx-auto px-6 py-20">
+<div class="glass-effect rounded-2xl p-10 max-w-4xl mx-auto">
+<div class="text-center">
+<h1 class="text-5xl font-bold text-gray-900 mb-6">Advanced Water Quality Prediction</h1>
+<p class="text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
+Analyze water samples for contamination and salinity with our cutting-edge prediction technology. Get accurate results for water quality assessment in seconds.
+</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+<a href="#predictor" class="bg-primary text-white px-8 py-3 !rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Start Analysis</a>
+<a href="#parameters" class="bg-white text-primary border border-primary px-8 py-3 !rounded-button font-medium hover:bg-gray-50 transition-colors whitespace-nowrap">Learn More</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Key Features Section -->
+<section id="features" class="py-20">
+<div class="container mx-auto px-6">
+<div class="glass-effect rounded-2xl p-10">
+<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Key Features</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-water-flash-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Comprehensive Analysis</h3>
+<p class="text-gray-700">
+Analyze both primary and secondary water parameters for a complete assessment of water quality and contamination levels.
+</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-speed-up-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Real-time Results</h3>
+<p class="text-gray-700">
+Get instant predictions on water quality with our advanced algorithm that processes data in real-time.
+</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-bar-chart-grouped-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Data Visualization</h3>
+<p class="text-gray-700">
+View detailed charts and graphs that help you understand water quality metrics at a glance.
+</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-database-2-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Historical Data</h3>
+<p class="text-gray-700">
+Track changes in water quality over time with our comprehensive data storage and retrieval system.
+</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-alert-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Contamination Alerts</h3>
+<p class="text-gray-700">
+Receive immediate notifications when water quality parameters exceed safe thresholds.
+</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-file-paper-2-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-3">Detailed Reports</h3>
+<p class="text-gray-700">
+Generate comprehensive reports with recommendations for water treatment based on analysis results.
+</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Predictor Section -->
+<section id="predictor" class="py-20">
+<div class="container mx-auto px-6">
+<div class="glass-effect rounded-2xl p-10">
+<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Water Quality Predictor</h2>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Input Form -->
+<div class="lg:col-span-2">
+<div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+<h3 class="text-xl font-semibold text-gray-900 mb-4">Primary Parameters</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block text-gray-700 mb-2">Total Dissolved Solids (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter TDS value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Electrical Conductivity (μS/cm)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter EC value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">pH Level</label>
+<div class="flex items-center">
+<input type="range" min="0" max="14" step="0.1" value="7" class="w-full mr-4">
+<span class="text-gray-700 min-w-[40px]">7.0</span>
+</div>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Chloride Level (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter chloride value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Sodium Level (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter sodium value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Sulphate Level (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter sulphate value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Heavy Metals Present</label>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Lead</span>
+</div>
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Mercury</span>
+</div>
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Arsenic</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Bacterial Contamination</label>
+<div class="flex items-center">
+<div class="custom-switch" onclick="this.classList.toggle('active')">
+<div class="custom-switch-track"></div>
+<div class="custom-switch-thumb"></div>
+</div>
+<span class="ml-2 text-gray-700">Detected</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm">
+<h3 class="text-xl font-semibold text-gray-900 mb-4">Secondary Parameters</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block text-gray-700 mb-2">Dissolved Oxygen (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter DO value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Biochemical Oxygen Demand (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter BOD value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Nitrates (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter nitrates value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Phosphates (mg/L)</label>
+<input type="number" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter phosphates value">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Pesticides Present</label>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Atrazine</span>
+</div>
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Glyphosate</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Industrial Chemicals</label>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>PCBs</span>
+</div>
+<div class="flex items-center">
+<div class="custom-checkbox mr-2" onclick="this.classList.toggle('checked')"></div>
+<span>Dioxins</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Turbidity (NTU)</label>
+<div class="flex items-center">
+<input type="range" min="0" max="100" step="1" value="5" class="w-full mr-4">
+<span class="text-gray-700 min-w-[40px]">5</span>
+</div>
+</div>
+<div class="flex items-end">
+<button id="analyzeBtn" class="bg-primary text-white px-6 py-2 !rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Analyze Sample</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Results Panel -->
+<div class="lg:col-span-1">
+<div class="bg-white p-6 rounded-xl shadow-sm h-full">
+<h3 class="text-xl font-semibold text-gray-900 mb-4">Analysis Results</h3>
+<div class="mb-6">
+<div class="flex justify-between items-center mb-2">
+<span class="text-gray-700">Water Quality Index</span>
+<span class="text-primary font-semibold">78/100</span>
+</div>
+<div class="w-full bg-gray-200 rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="mb-6">
+<h4 class="font-medium text-gray-900 mb-3">Classification</h4>
+<div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg inline-block">
+Good - Suitable for most purposes
+</div>
+</div>
+<div class="mb-6">
+<h4 class="font-medium text-gray-900 mb-3">Parameter Analysis</h4>
+<div id="parameterChart" class="w-full h-64"></div>
+</div>
+<div>
+<h4 class="font-medium text-gray-900 mb-3">Recommendations</h4>
+<ul class="list-disc pl-5 text-gray-700 space-y-2">
+<li>Monitor chloride levels which are slightly elevated</li>
+<li>No treatment required for general use</li>
+<li>Consider filtration for drinking purposes</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Parameters Section -->
+<section id="parameters" class="py-20">
+<div class="container mx-auto px-6">
+<div class="glass-effect rounded-2xl p-10">
+<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Parameter Details</h2>
+<div class="mb-8">
+<div class="flex justify-center mb-8">
+<div class="inline-flex rounded-full p-1 bg-gray-100">
+<button id="primaryTabBtn" class="px-6 py-2 rounded-full bg-primary text-white whitespace-nowrap">Primary Parameters</button>
+<button id="secondaryTabBtn" class="px-6 py-2 rounded-full text-gray-700 whitespace-nowrap">Secondary Parameters</button>
+</div>
+</div>
+<div id="primaryTab" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-drop-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Total Dissolved Solids</h3>
+<p class="text-gray-700 mb-3">
+Measures the total amount of mobile charged ions, including minerals, salts, or metals dissolved in water.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe range:</span>
+<span class="text-primary font-medium">0-500 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-flashlight-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Electrical Conductivity</h3>
+<p class="text-gray-700 mb-3">
+Measures water's ability to conduct an electrical current, directly related to the concentration of dissolved salts.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe range:</span>
+<span class="text-primary font-medium">0-800 μS/cm</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-test-tube-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">pH Level</h3>
+<p class="text-gray-700 mb-3">
+Measures how acidic or basic water is. The pH scale ranges from 0 to 14, with 7 being neutral.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe range:</span>
+<span class="text-primary font-medium">6.5-8.5</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-water-percent-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Salinity (Chloride, Sodium, Sulphate)</h3>
+<p class="text-gray-700 mb-3">
+Measures the concentration of dissolved salt content in water. High levels can affect taste and usability.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe range:</span>
+<span class="text-primary font-medium">Cl: <500 mg/L, Na: <200 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-copper-coin-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Heavy Metals</h3>
+<p class="text-gray-700 mb-3">
+Detects presence of toxic metals like lead, mercury, and arsenic that can cause serious health problems.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe level:</span>
+<span class="text-primary font-medium">Varies by metal, generally <0.01 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-virus-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Bacterial Contamination</h3>
+<p class="text-gray-700 mb-3">
+Identifies presence of harmful bacteria like E. coli and coliform bacteria that indicate fecal contamination.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe level:</span>
+<span class="text-primary font-medium">0 CFU/100mL for drinking water</span>
+</div>
+</div>
+</div>
+<div id="secondaryTab" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-bubble-chart-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Dissolved Oxygen</h3>
+<p class="text-gray-700 mb-3">
+Measures the amount of oxygen dissolved in water. Essential for aquatic life and indicates water quality.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Healthy range:</span>
+<span class="text-primary font-medium">5-9 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-plant-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Biochemical Oxygen Demand</h3>
+<p class="text-gray-700 mb-3">
+Measures the amount of oxygen consumed by microorganisms in decomposing organic matter.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Good quality:</span>
+<span class="text-primary font-medium"><3 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-leaf-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Nitrates and Phosphates</h3>
+<p class="text-gray-700 mb-3">
+Nutrients that can cause excessive algae growth when present in high concentrations.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe levels:</span>
+<span class="text-primary font-medium">NO₃: <10 mg/L, PO₄: <0.1 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-bug-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Pesticides and Industrial Chemicals</h3>
+<p class="text-gray-700 mb-3">
+Detects synthetic chemicals from agricultural runoff or industrial discharge that can be harmful.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Safe level:</span>
+<span class="text-primary font-medium">Varies by compound, typically <0.0001 mg/L</span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm parameter-card transition-all duration-300">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-contrast-drop-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 mb-2">Turbidity</h3>
+<p class="text-gray-700 mb-3">
+Measures the cloudiness or haziness of water caused by suspended particles that reduce light transmission.
+</p>
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">Acceptable level:</span>
+<span class="text-primary font-medium"><5 NTU</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section id="about" class="py-20">
+<div class="container mx-auto px-6">
+<div class="glass-effect rounded-2xl p-10">
+<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">About Us</h2>
+<div class="mb-12">
+<h3 class="text-2xl font-semibold text-center text-gray-900 mb-8">Our Mission</h3>
+<p class="text-gray-700 text-center max-w-3xl mx-auto">
+We are dedicated to developing innovative solutions for water quality assessment and monitoring. Our goal is to provide accessible tools that help individuals and communities ensure access to clean and safe water resources.
+</p>
+</div>
+<div class="mb-12">
+<h3 class="text-2xl font-semibold text-center text-gray-900 mb-8">Team Members</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+<div class="bg-white p-6 rounded-xl shadow-sm text-center">
+<div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full">
+<img src="https://static.readdy.ai/image/74a3053a5b6d3a5badd4b71876f16ed5/cea0ae1799ae6e5eb7ec4a1e589cf5a4.jpeg" alt="Shriya N" class="w-full h-full object-cover">
+</div>
+<h4 class="text-xl font-semibold text-gray-900 mb-1">Shriya N</h4>
+<p class="text-gray-600 mb-4">6th AIML, EWIT</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm text-center">
+<div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full">
+<img src="https://static.readdy.ai/image/74a3053a5b6d3a5badd4b71876f16ed5/ace4363378fb49237468bd7fae218dc7.jpeg" alt="Smitha KV" class="w-full h-full object-cover">
+</div>
+<h4 class="text-xl font-semibold text-gray-900 mb-1">Smitha KV</h4>
+<p class="text-gray-600 mb-4">6th AIML, EWIT</p>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-2xl font-semibold text-center text-gray-900 mb-8">Under the Guidance of</h3>
+<div class="bg-white p-6 rounded-xl shadow-sm text-center max-w-2xl mx-auto">
+<div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full">
+<img src="https://static.readdy.ai/image/74a3053a5b6d3a5badd4b71876f16ed5/27da574a54a0d5a0c35c67c3ae1eeae9.jpeg" alt="DR. Shashi Shekar TR" class="w-full h-full object-cover">
+</div>
+<h4 class="text-xl font-semibold text-gray-900 mb-1">DR. Shashi Shekar TR</h4>
+<p class="text-gray-600 mb-2">Professor - Department of Civil Engineering</p>
+<p class="text-gray-600 mb-2">Treasurer, Zero Waste Society of India (ZWSI-ECSI) - IISc Campus</p>
+<p class="text-gray-600 mb-4">IQAC Coordinator - EWIT</p>
+<div class="flex justify-center items-center space-x-4">
+<a href="mailto:shashishekhartr@ewit.edu.in" class="flex items-center text-gray-700 hover:text-primary">
+<i class="ri-mail-line ri-lg mr-2"></i>
+<span>shashishekhartr@ewit.edu.in</span>
+</a>
+</div>
+<div class="flex justify-center items-center mt-2">
+<a href="tel:+919980211355" class="flex items-center text-gray-700 hover:text-primary">
+<i class="ri-phone-line ri-lg mr-2"></i>
+<span>+91 99802 11355</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section id="contact" class="py-20">
+<div class="container mx-auto px-6">
+<div class="glass-effect rounded-2xl p-10">
+<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Contact Us</h2>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+<div>
+<h3 class="text-xl font-semibold text-gray-900 mb-6">Get in Touch</h3>
+<p class="text-gray-700 mb-8">
+Have questions about our water quality prediction system? Need assistance with analysis or implementation? Reach out to us and we'll be happy to help.
+</p>
+<div class="space-y-4">
+<div class="flex items-start">
+<div class="w-10 h-10 flex items-center justify-center mr-4 mt-1">
+<i class="ri-map-pin-line ri-lg text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-900">Address</h4>
+<p class="text-gray-700">East West Institute of Technology, Bangalore, Karnataka, India</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-10 h-10 flex items-center justify-center mr-4 mt-1">
+<i class="ri-mail-line ri-lg text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-900">Email</h4>
+<p class="text-gray-700">shashishekhartr@ewit.edu.in</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-10 h-10 flex items-center justify-center mr-4 mt-1">
+<i class="ri-phone-line ri-lg text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-900">Phone</h4>
+<p class="text-gray-700">+91 99802 11355</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xl font-semibold text-gray-900 mb-6">Send Us a Message</h3>
+<form>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div>
+<label class="block text-gray-700 mb-2">Full Name</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your name">
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Email</label>
+<input type="email" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your email">
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 mb-2">Subject</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Message subject">
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 mb-2">Message</label>
+<textarea rows="5" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your message"></textarea>
+</div>
+<button type="submit" class="bg-primary text-white px-6 py-3 !rounded-button font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">Send Message</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="py-10 glass-effect">
+<div class="container mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<div class="mb-6 md:mb-0">
+<a href="#" class="text-3xl font-['Pacifico'] text-primary">AquaAnalytics</a>
+<p class="text-gray-700 mt-2">Advanced Water Quality Prediction</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a href="#home" class="text-gray-700 hover:text-primary transition-colors">Home</a>
+<a href="#features" class="text-gray-700 hover:text-primary transition-colors">Features</a>
+<a href="#predictor" class="text-gray-700 hover:text-primary transition-colors">Predictor</a>
+<a href="#parameters" class="text-gray-700 hover:text-primary transition-colors">Parameters</a>
+<a href="#about" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
+<a href="#contact" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
+</div>
+</div>
+<div class="border-t border-gray-200 mt-8 pt-8 text-center">
+<p class="text-gray-600">© 2025 AquaAnalytics. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<script>
+// Parameter Chart
+const parameterChart = echarts.init(document.getElementById('parameterChart'));
+const parameterOption = {
+animation: false,
+radar: {
+indicator: [
+{ name: 'TDS', max: 100 },
+{ name: 'EC', max: 100 },
+{ name: 'pH', max: 100 },
+{ name: 'Salinity', max: 100 },
+{ name: 'DO', max: 100 }
+],
+radius: '65%'
+},
+series: [{
+type: 'radar',
+data: [{
+value: [85, 90, 95, 70, 88],
+name: 'Water Quality',
+areaStyle: {
+color: 'rgba(87, 181, 231, 0.1)'
+},
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)'
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+}]
+}],
+textStyle: {
+color: '#1f2937'
+}
+};
+parameterChart.setOption(parameterOption);
+// Water Quality Analysis Function
+document.getElementById('analyzeBtn').addEventListener('click', function() {
+  // Create loading state
+  const resultPanel = document.querySelector('.bg-white.p-6.rounded-xl.shadow-sm.h-full');
+  resultPanel.innerHTML = `
+    <h3 class="text-xl font-semibold text-gray-900 mb-4">Analysis Results</h3>
+    <div class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+    <p class="text-center text-gray-700">Analyzing water sample...</p>
+  `;
+  
+  // Simulate processing time
+  setTimeout(() => {
+    // Get input values
+    const tdsValue = parseFloat(document.querySelector('input[placeholder="Enter TDS value"]').value) || Math.floor(Math.random() * 400) + 100;
+    const ecValue = parseFloat(document.querySelector('input[placeholder="Enter EC value"]').value) || Math.floor(Math.random() * 700) + 100;
+    const phValue = parseFloat(document.querySelector('input[type="range"][min="0"][max="14"]').nextElementSibling.textContent) || 7.0;
+    const chlorideValue = parseFloat(document.querySelector('input[placeholder="Enter chloride value"]').value) || Math.floor(Math.random() * 400) + 50;
+    const sodiumValue = parseFloat(document.querySelector('input[placeholder="Enter sodium value"]').value) || Math.floor(Math.random() * 150) + 50;
+    const doValue = parseFloat(document.querySelector('input[placeholder="Enter DO value"]').value) || Math.floor(Math.random() * 4) + 5;
+    const bodValue = parseFloat(document.querySelector('input[placeholder="Enter BOD value"]').value) || Math.floor(Math.random() * 3) + 1;
+    const turbidityValue = parseFloat(document.querySelector('input[type="range"][min="0"][max="100"]').nextElementSibling.textContent) || 5;
+    
+    // Check for heavy metals and bacteria
+    const heavyMetalsChecked = document.querySelectorAll('.custom-checkbox.checked').length;
+    const bacteriaDetected = document.querySelector('.custom-switch.active') ? true : false;
+    
+    // Calculate water quality index (simplified algorithm)
+    let wqi = 0;
+    
+    // TDS contribution (0-500 mg/L is good)
+    const tdsScore = tdsValue <= 300 ? 100 : tdsValue <= 500 ? 80 : tdsValue <= 1000 ? 60 : tdsValue <= 1500 ? 40 : 20;
+    wqi += tdsScore * 0.2;
+    
+    // EC contribution (0-800 μS/cm is good)
+    const ecScore = ecValue <= 400 ? 100 : ecValue <= 800 ? 80 : ecValue <= 1500 ? 60 : ecValue <= 2500 ? 40 : 20;
+    wqi += ecScore * 0.15;
+    
+    // pH contribution (6.5-8.5 is good)
+    const phScore = (phValue >= 6.5 && phValue <= 8.5) ? 100 : (phValue >= 6.0 && phValue <= 9.0) ? 70 : 40;
+    wqi += phScore * 0.15;
+    
+    // Chloride contribution
+    const chlorideScore = chlorideValue <= 250 ? 100 : chlorideValue <= 500 ? 70 : chlorideValue <= 1000 ? 40 : 20;
+    wqi += chlorideScore * 0.1;
+    
+    // DO contribution
+    const doScore = doValue >= 7 ? 100 : doValue >= 5 ? 80 : doValue >= 3 ? 50 : 20;
+    wqi += doScore * 0.15;
+    
+    // BOD contribution
+    const bodScore = bodValue <= 1 ? 100 : bodValue <= 3 ? 80 : bodValue <= 5 ? 60 : bodValue <= 10 ? 40 : 20;
+    wqi += bodScore * 0.1;
+    
+    // Heavy metals and bacteria penalty
+    wqi -= heavyMetalsChecked * 10;
+    if (bacteriaDetected) wqi -= 15;
+    
+    // Ensure WQI is between 0-100
+    wqi = Math.max(0, Math.min(100, Math.round(wqi)));
+    
+    // Determine classification
+    let classification, classColor;
+    if (wqi >= 90) {
+      classification = "Excellent - Safe for all purposes";
+      classColor = "bg-green-100 text-green-800";
+    } else if (wqi >= 70) {
+      classification = "Good - Suitable for most purposes";
+      classColor = "bg-green-100 text-green-800";
+    } else if (wqi >= 50) {
+      classification = "Fair - Requires basic treatment";
+      classColor = "bg-yellow-100 text-yellow-800";
+    } else if (wqi >= 30) {
+      classification = "Poor - Requires extensive treatment";
+      classColor = "bg-orange-100 text-orange-800";
+    } else {
+      classification = "Unsafe - Not suitable for use";
+      classColor = "bg-red-100 text-red-800";
+    }
+    
+    // Generate recommendations
+    let recommendations = [];
+    if (tdsValue > 500) recommendations.push("Reduce total dissolved solids through filtration");
+    if (ecValue > 800) recommendations.push("High electrical conductivity indicates excessive mineral content");
+    if (phValue < 6.5) recommendations.push("Water is acidic, consider pH adjustment");
+    if (phValue > 8.5) recommendations.push("Water is alkaline, consider pH adjustment");
+    if (chlorideValue > 250) recommendations.push("Monitor chloride levels which are elevated");
+    if (sodiumValue > 200) recommendations.push("Sodium levels are high, may affect taste");
+    if (doValue < 5) recommendations.push("Low dissolved oxygen may affect aquatic life");
+    if (bodValue > 3) recommendations.push("High biochemical oxygen demand indicates organic pollution");
+    if (heavyMetalsChecked > 0) recommendations.push("Heavy metal contamination detected, advanced filtration required");
+    if (bacteriaDetected) recommendations.push("Bacterial contamination detected, disinfection required");
+    
+    if (recommendations.length === 0) {
+      recommendations.push("No treatment required for general use");
+      recommendations.push("Regular monitoring recommended");
+    }
+    
+    // Update radar chart with new values
+    const normalizedTDS = Math.min(100, (tdsValue <= 500 ? tdsValue/5 : 100));
+    const normalizedEC = Math.min(100, (ecValue <= 800 ? ecValue/8 : 100));
+    const normalizedPH = Math.min(100, (phValue >= 6.5 && phValue <= 8.5 ? 100 : 50));
+    const normalizedSalinity = Math.min(100, (chlorideValue <= 250 ? chlorideValue/2.5 : 100));
+    const normalizedDO = Math.min(100, (doValue >= 5 ? doValue*10 : 50));
+    
+    parameterChart.setOption({
+      series: [{
+        data: [{
+          value: [
+            100 - normalizedTDS,
+            100 - normalizedEC,
+            normalizedPH,
+            100 - normalizedSalinity,
+            normalizedDO
+          ],
+          name: 'Water Quality'
+        }]
+      }]
+    });
+    
+    // Update results panel
+    resultPanel.innerHTML = `
+      <h3 class="text-xl font-semibold text-gray-900 mb-4">Analysis Results</h3>
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-gray-700">Water Quality Index</span>
+          <span class="text-primary font-semibold">${wqi}/100</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-primary h-2.5 rounded-full" style="width: ${wqi}%"></div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <h4 class="font-medium text-gray-900 mb-3">Classification</h4>
+        <div class="${classColor} px-4 py-2 rounded-lg inline-block">
+          ${classification}
+        </div>
+      </div>
+      <div class="mb-6">
+        <h4 class="font-medium text-gray-900 mb-3">Parameter Analysis</h4>
+        <div id="parameterChart" class="w-full h-64"></div>
+      </div>
+      <div>
+        <h4 class="font-medium text-gray-900 mb-3">Recommendations</h4>
+        <ul class="list-disc pl-5 text-gray-700 space-y-2">
+          ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+    
+    // Reinitialize chart in new container
+    const newParameterChart = echarts.init(document.getElementById('parameterChart'));
+    newParameterChart.setOption(parameterOption);
+    newParameterChart.setOption({
+      series: [{
+        data: [{
+          value: [
+            100 - normalizedTDS,
+            100 - normalizedEC,
+            normalizedPH,
+            100 - normalizedSalinity,
+            normalizedDO
+          ],
+          name: 'Water Quality'
+        }]
+      }]
+    });
+    
+    // Show success notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md transition-opacity duration-500';
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center mr-2">
+          <i class="ri-check-line ri-lg"></i>
+        </div>
+        <p>Water sample analysis completed successfully!</p>
+      </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        notification.remove();
+      }, 500);
+    }, 3000);
+    
+  }, 1500);
+});
+// Tab Switching
+const primaryTabBtn = document.getElementById('primaryTabBtn');
+const secondaryTabBtn = document.getElementById('secondaryTabBtn');
+const primaryTab = document.getElementById('primaryTab');
+const secondaryTab = document.getElementById('secondaryTab');
+primaryTabBtn.addEventListener('click', function() {
+primaryTab.classList.remove('hidden');
+secondaryTab.classList.add('hidden');
+primaryTabBtn.classList.add('bg-primary', 'text-white');
+primaryTabBtn.classList.remove('text-gray-700');
+secondaryTabBtn.classList.remove('bg-primary', 'text-white');
+secondaryTabBtn.classList.add('text-gray-700');
+});
+secondaryTabBtn.addEventListener('click', function() {
+primaryTab.classList.add('hidden');
+secondaryTab.classList.remove('hidden');
+primaryTabBtn.classList.remove('bg-primary', 'text-white');
+primaryTabBtn.classList.add('text-gray-700');
+secondaryTabBtn.classList.add('bg-primary', 'text-white');
+secondaryTabBtn.classList.remove('text-gray-700');
+});
+// Responsive chart resize
+window.addEventListener('resize', function() {
+parameterChart.resize();
+});
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function (e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop - 80, // Offset for header
+behavior: 'smooth'
+});
+}
+});
+});
+// Update range input displays
+document.querySelectorAll('input[type="range"]').forEach(range => {
+  range.addEventListener('input', function() {
+    this.nextElementSibling.textContent = this.value;
+  });
+});
+</script>
+</body>
+</html>
